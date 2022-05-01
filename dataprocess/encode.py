@@ -16,12 +16,13 @@ def encode_data_BERT(input_ids,attention_mask,batch_size=5):
 	size = input_ids.shape[0]
 	num_words = input_ids.shape[1]
 
-	bert_out = torch.zeros((size,num_words,768))
 	pool_out = torch.zeros((size,768))
 
 	# loops through whole batches
 	for i in range(size//batch_size):
-		index = index_base * (i+1)
+		torch.cuda.empty_cache()
+
+		index = index_base + (batch_size* i)
 		input_ids_sample = input_ids[index,:].cuda()
 		attention_mask_sample = attention_mask[index,:].cuda()
 		out,pool = model(input_ids=input_ids_sample , attention_mask=attention_mask_sample,return_dict=False)
@@ -30,15 +31,17 @@ def encode_data_BERT(input_ids,attention_mask,batch_size=5):
 		del input_ids_sample
 		del attention_mask_sample
 
-		bert_out[index,:,:] = out.detach().cpu()
 		pool_out[index,:]   = pool.detach().cpu()
 
 		del out
 		del pool
 
+
 		print(i*batch_size,size)
 
 	if size//batch_size != size/batch_size:
+		torch.cuda.empty_cache()
+
 		input_ids_sample = input_ids[size:,:].cuda()
 		attention_mask_sample = attention_mask[size:,:].cuda()
 		out,pool = model(input_ids=input_ids_sample , attention_mask=attention_mask_sample,return_dict=False)
@@ -47,13 +50,12 @@ def encode_data_BERT(input_ids,attention_mask,batch_size=5):
 		del input_ids_sample
 		del attention_mask_sample
 
-		bert_out[size:,:,:] = out.detach().cpu()
 		pool_out[size:,:]   = pool.detach().cpu()
 
 		del out
 		del pool
 	
-	return (bert_out,pool_out)
+	return pool_out
 
 
 
