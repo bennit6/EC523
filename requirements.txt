@@ -1,5 +1,5 @@
 sentencepiece
 n2w
-transformer
+transformers
 nltk
 contractions
