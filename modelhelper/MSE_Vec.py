@@ -1,11 +1,21 @@
 import torch
+import torch.nn as nn
 
 # TODO:
 #	- rewrite and test in torch
 
+m = nn.Softmax(dim=1).cuda()
+
+def gen_MSE_Vec(labels, scale=3, n=5):
+	size = len(labels)
+	vec = torch.rand((size,n),device=torch.device('cuda'))
+	vec[list(range(size)),labels] = scale
+	return m(vec)
+
+
 class MSE_Vec_matrix():
-	def __init__(self,mid=0.8,n=5):
-		if mid >1 or mid < 0:
+	def __init__(self,edge=0.1,n=5):
+		if edge >1 or edge < 0:
 			ValueError(f'Mid should be in the range [0,1], but got {mid}')
 		if n < 0:
 			ValueError(f'N must be a positive number, but got {n}')
@@ -13,9 +23,7 @@ class MSE_Vec_matrix():
 			ValueError(f'N must be an integer, but got {n}')
 		
 		indices = torch.tensor(range(n))
-		edge = (1-mid)/2
-		index_mat = mid * torch.eye(n)
-		index_mat[[0,-1],[0,-1]] = mid + edge
+		index_mat = torch.eye(n)
 		index_mat[indices[1:],indices[:-1]] = edge
 		index_mat[indices[:-1],indices[1:]] = edge
 		

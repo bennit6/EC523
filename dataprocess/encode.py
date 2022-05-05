@@ -90,8 +90,3 @@ def encode_data(input_ids,attention_mask,batch_size=5, model_name="fnet"):
 		bar.finish()
 	
 	return pool_out
-
-# if __name__ == '__main__':
-	# print('yes')
-	# print('no')
-	# print('\033[F test') # goes up a line
