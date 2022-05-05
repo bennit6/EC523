@@ -1,0 +1,6 @@
+sentencepiece
+n2w
+transformers
+nltk
+contractions
+progress
