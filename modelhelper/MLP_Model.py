@@ -13,13 +13,13 @@ class Net(nn.Module):
         self.dropout = nn.Dropout(dropout)
         self.batch_norm = batch_norm
 
-        for i in range(self.num_layers):
-            self.linear.append(nn.Linear(self.h_sizes[i][0], self.h_sizes[i][1]))
+        for i in range(1,self.num_layers):
+            self.linear.append(nn.Linear(self.h_sizes[i-1], self.h_sizes[i]))
             
         if self.batch_norm:
             self.batch = nn.ModuleList()
             for j in range(self.num_layers - 1):
-                self.batch.append(nn.BatchNorm1d(self.h_sizes[j][1], affine=False))
+                self.batch.append(nn.BatchNorm1d(self.h_sizes[j], affine=False))
 
 
     def forward(self, x):
